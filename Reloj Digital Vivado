@@ -1,1 +1,229 @@
+----DISEÑO DE RELOJ DIGITAL ------ 
+-------------A PARTIR DE LA LINEA 108 SE ENCUENTRA EL CÓDIGO DE LA SIMULACIÓN "TEST BENCH" --------- 
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;  
 
+entity digital_clock is
+ --frequency of the clock passed as a generic parameter.
+generic( CLOCK_FREQ : integer := 50000000	); 
+port(	
+		Clock : in std_logic;  
+		reset : in std_logic;  
+		inc_secs : in std_logic; 
+		inc_mins : in std_logic;  
+		inc_hrs : in std_logic;  
+		seconds :out unsigned(5 downto 0); 
+		minutes :out unsigned(5 downto 0); 
+		hours :out unsigned(4 downto 0)  
+		);
+end digital_clock;
+
+architecture Behavioral of digital_clock is
+
+
+signal secs, mins, hrs : integer := 0;  
+
+signal counter : integer := 0;  
+
+begin
+
+process(Clock, reset)
+begin
+	if(reset = '1') then	
+		secs <= 0;
+		mins <= 0;
+		hrs <= 0;
+		counter <= 0;
+	elsif(rising_edge(Clock)) then
+		--increment the seconds. also increment mins and hours if needed.
+		if(inc_secs = '1') then
+			if(secs = 59) then
+				secs <= 0;
+				if(mins = 59) then
+					mins <= 0;
+					if(hrs = 23) then
+						hrs <= 0;
+					else
+						hrs <= hrs+1;
+					end if;
+				else
+					mins <= mins+1;
+				end if;
+			else
+				secs <= secs + 1;
+			end if;
+		
+		elsif(inc_mins = '1') then
+			if(mins = 59) then
+				mins <= 0;
+				if(hrs = 23) then
+					hrs <= 0;
+				else
+					hrs <= hrs+1;
+				end if;
+			else
+				mins <= mins+1;
+			end if;
+			elsif(inc_hrs = '1') then
+			if(hrs = 23) then
+				hrs <= 0;
+			else
+				hrs <= hrs+1;
+			end if;
+		end if;
+		
+		
+		if(counter = CLOCK_FREQ-1) then	
+			counter <= 0;
+			
+			if(secs = 59) then
+				secs <= 0;
+				if(mins = 59) then
+					mins <= 0;
+					if(hrs = 23) then
+						hrs <= 0;
+					else
+						hrs <= hrs+1;
+					end if;
+				else
+					mins <= mins+1;
+				end if;
+			else
+				secs <= secs + 1;
+			end if;
+		else
+			counter <= counter+1;
+		end if;
+	end if;
+	
+end process;
+
+
+seconds <= to_unsigned(secs, 6);
+minutes <= to_unsigned(mins, 6);
+hours <= to_unsigned(hrs, 5);
+
+end Behavioral;
+
+---------- CÓDIGO DE SIMULACIÓN TEST BENCH ------------------
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+library std;
+use std.env.finish;
+ 
+ENTITY tb_digital_clock IS
+END tb_digital_clock;
+ 
+ARCHITECTURE behavior OF tb_digital_clock IS 
+ 
+   
+    COMPONENT digital_clock
+    generic( CLOCK_FREQ : integer := 50000000	); 
+    PORT(
+         Clock : IN  std_logic;
+         reset : IN  std_logic;
+         inc_secs : IN  std_logic;
+         inc_mins : IN  std_logic;
+         inc_hrs : IN  std_logic;
+         seconds : OUT  unsigned(5 downto 0);
+         minutes : OUT  unsigned(5 downto 0);
+         hours : OUT  unsigned(4 downto 0)
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal Clock : std_logic := '0';
+   signal reset : std_logic := '0';
+   signal inc_secs : std_logic := '0';
+   signal inc_mins : std_logic := '0';
+   signal inc_hrs : std_logic := '0';
+
+ 	--Outputs
+   signal seconds : unsigned(5 downto 0);
+   signal minutes : unsigned(5 downto 0);
+   signal hours : unsigned(4 downto 0);
+
+  
+   constant Clock_period : time := 10 ns;
+	
+	
+	constant CLOCK_FREQ : integer := 10;
+ 
+BEGIN
+ 
+	
+   uut: digital_clock 
+		GENERIC MAP(CLOCK_FREQ => CLOCK_FREQ)
+		PORT MAP (
+          Clock => Clock,
+          reset => reset,
+          inc_secs => inc_secs,
+          inc_mins => inc_mins,
+          inc_hrs => inc_hrs,
+          seconds => seconds,
+          minutes => minutes,
+          hours => hours
+        );
+
+  
+   Clock_process :process
+   begin
+		Clock <= '0';
+		wait for Clock_period/2;
+		Clock <= '1';
+		wait for Clock_period/2;
+   end process;
+ 
+
+ 
+   stim_proc: process
+   begin		
+		reset <= '1';
+      -- hold reset state for 100 ns.
+      wait for 100 ns;	
+		reset <= '0';
+      wait for Clock_period*CLOCK_FREQ*60*60*25;  --run the clock for 25 hours
+		
+		--increment seconds
+		inc_secs <= '1';	wait for Clock_period;
+		inc_secs <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing seconds once.
+		
+		--increment seconds 60 times
+		inc_secs <= '1';	wait for Clock_period*60;
+		inc_secs <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing seconds.
+		
+		--increment minutes
+		inc_mins <= '1';	wait for Clock_period;
+		inc_mins <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing minutes once.
+		
+		--increment minutes 60 times
+		inc_mins <= '1';	wait for Clock_period*60;
+		inc_mins <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing minutes.
+		
+		--increment hours
+		inc_hrs <= '1';	wait for Clock_period;
+		inc_hrs <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing hours once.
+		
+		--increment hours 25 times
+		inc_hrs <= '1';	wait for Clock_period*25;
+		inc_hrs <= '0';	
+    wait for Clock_period*CLOCK_FREQ*5;	--wait for 5 secs after incrementing hours.
+		
+		--apply reset
+		reset <= '1';
+		
+		--wait for 100 Clock cycles and then finish the simulation.
+		--with the current settings it will run around 9 ms of simualtion time. 
+		wait for Clock_period*100;
+		finish;  
+   end process;
+
+END;
