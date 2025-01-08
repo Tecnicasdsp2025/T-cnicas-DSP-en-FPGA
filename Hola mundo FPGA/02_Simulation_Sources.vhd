@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -13,7 +12,7 @@ architecture Behavioral of Led_tb is
     signal led3 : STD_LOGIC;
     signal led4 : STD_LOGIC;
     
-    -- Declaración del componente para la Unidad Bajo Prueba (UUT)
+    -- Component Declaration for the Unit Under Test (UUT)
     component Led
         Port ( sw0 : in STD_LOGIC;
                sw1 : in STD_LOGIC;
@@ -24,7 +23,7 @@ architecture Behavioral of Led_tb is
     end component;
 
 begin
-    -- Instanciar la Unidad Bajo Prueba (UUT)
+    -- Instantiate the Unit Under Test (UUT)
     uut: Led PORT MAP (
           sw0 => sw0,
           sw1 => sw1,
@@ -34,102 +33,34 @@ begin
           led4 => led4
         );
 
-    -- Proceso de estímulo
+    -- Stimulus process
     stim_proc: process
     begin		
-        -- Mantener el estado de reinicio durante 100 ns
+        -- Hold reset state for 100 ns
         wait for 100 ns;
         
-        -- Caso de prueba 1: sw0 = 0, sw1 = 0
+        -- Test case 1: sw0 = 0, sw1 = 0
         sw0 <= '0';
         sw1 <= '0';
         wait for 100 ns;
         
-        -- Caso de prueba 2: sw0 = 1, sw1 = 0
+        -- Test case 2: sw0 = 1, sw1 = 0
         sw0 <= '1';
         sw1 <= '0';
         wait for 100 ns;
         
-        -- Caso de prueba 3: sw0 = 0, sw1 = 1
+        -- Test case 3: sw0 = 0, sw1 = 1
         sw0 <= '0';
         sw1 <= '1';
         wait for 100 ns;
         
-        -- Caso de prueba 4: sw0 = 1, sw1 = 1
+        -- Test case 4: sw0 = 1, sw1 = 1
         sw0 <= '1';
         sw1 <= '1';
         wait for 100 ns;
         
-        -- Finalizar la simulación
+        -- End simulation
         wait;
     end process;
 
 end Behavioral;
-=======
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
-entity Led_tb is
-end Led_tb;
-
-architecture Behavioral of Led_tb is
-    signal sw0 : STD_LOGIC := '0';
-    signal sw1 : STD_LOGIC := '0';
-    signal led1 : STD_LOGIC;
-    signal led2 : STD_LOGIC;
-    signal led3 : STD_LOGIC;
-    signal led4 : STD_LOGIC;
-    
-    -- DeclaraciÃ³n del componente para la Unidad Bajo Prueba (UUT)
-    component Led
-        Port ( sw0 : in STD_LOGIC;
-               sw1 : in STD_LOGIC;
-               led1 : out STD_LOGIC;
-               led2 : out STD_LOGIC;
-               led3 : out STD_LOGIC;
-               led4 : out STD_LOGIC);
-    end component;
-
-begin
-    -- Instanciar la Unidad Bajo Prueba (UUT)
-    uut: Led PORT MAP (
-          sw0 => sw0,
-          sw1 => sw1,
-          led1 => led1,
-          led2 => led2,
-          led3 => led3,
-          led4 => led4
-        );
-
-    -- Proceso de estÃ­mulo
-    stim_proc: process
-    begin		
-        -- Mantener el estado de reinicio durante 100 ns
-        wait for 100 ns;
-        
-        -- Caso de prueba 1: sw0 = 0, sw1 = 0
-        sw0 <= '0';
-        sw1 <= '0';
-        wait for 100 ns;
-        
-        -- Caso de prueba 2: sw0 = 1, sw1 = 0
-        sw0 <= '1';
-        sw1 <= '0';
-        wait for 100 ns;
-        
-        -- Caso de prueba 3: sw0 = 0, sw1 = 1
-        sw0 <= '0';
-        sw1 <= '1';
-        wait for 100 ns;
-        
-        -- Caso de prueba 4: sw0 = 1, sw1 = 1
-        sw0 <= '1';
-        sw1 <= '1';
-        wait for 100 ns;
-        
-        -- Finalizar la simulaciÃ³n
-        wait;
-    end process;
-
-end Behavioral;
->>>>>>> 4c43e2f38ebb05e2c179e580f5bdb9ee547cf245
